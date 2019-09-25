@@ -1,2 +1,6 @@
 # miaoshaSystem
 用java实现的一个秒杀系统
+前端技术使用thylemeaf+jQuery+bootrast
+后端技术使用springboot+druid+mybatis
+中间件技术使用redis+RabbitMQ
+压测工具使用Jmeter
