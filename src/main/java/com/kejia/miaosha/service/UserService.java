@@ -35,7 +35,4 @@ public class UserService {
         userDao.insert(u2);
         return true;
     }
-
-    public void login(HttpServletResponse response, LoginVo loginVo) {
-    }
 }
