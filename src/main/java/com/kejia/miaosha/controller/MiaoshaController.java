@@ -5,6 +5,7 @@ import com.kejia.miaosha.domin.MiaoshaUser;
 import com.kejia.miaosha.domin.OrderInfo;
 import com.kejia.miaosha.redis.RedisService;
 import com.kejia.miaosha.result.CodeMsg;
+import com.kejia.miaosha.result.Result;
 import com.kejia.miaosha.service.GoodsService;
 import com.kejia.miaosha.service.MiaoshaService;
 import com.kejia.miaosha.service.MiaoshaUserService;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -42,31 +45,27 @@ public class MiaoshaController {
     @Autowired
     RedisService redisService;
 
-    @RequestMapping("/do_miaosha")
-    public String list(Model model, MiaoshaUser user,
-                       @RequestParam("goodsId")long goodsId) {
+    @RequestMapping(value="/do_miaosha", method= RequestMethod.POST)
+    @ResponseBody
+    public Result<OrderInfo> miaosha(Model model, MiaoshaUser user,
+                                     @RequestParam("goodsId")long goodsId) {
         model.addAttribute("user", user);
-        if(user==null) return "login";
-        //判断有没有库存
-        GoodsVo vo = goodsService.getGoodsVoByGoodsId(goodsId);
-        int stock = vo.getStockCount();
-        if(stock <=0){
-            model.addAttribute("errmsg", CodeMsg.MIAO_SHA_OVER.getMsg());
-            return "miaosha_fail";
-
+        if(user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
         }
-
+        //判断库存
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);//10个商品，req1 req2
+        int stock = goods.getStockCount();
+        if(stock <= 0) {
+            return Result.error(CodeMsg.MIAO_SHA_OVER);
+        }
         //判断是否已经秒杀到了
-        MiaoshaOrder order = orderService.getMiaoshaOrderByUserIdGoodsId(user.getId(),goodsId);
-        if(order!=null){
-            model.addAttribute("errmsg",CodeMsg.REPEATE_MIAOSHA.getMsg());
-            return "miaosha_fail";
+        MiaoshaOrder order = orderService.getMiaoshaOrderByUserIdGoodsId(user.getId(), goodsId);
+        if(order != null) {
+            return Result.error(CodeMsg.REPEATE_MIAOSHA);
         }
-
         //减库存 下订单 写入秒杀订单
-        OrderInfo orderInfo = miaoshaService.miaosha(user,vo);
-        model.addAttribute("orderInfo",orderInfo);
-        model.addAttribute("goods",vo);
-        return "order_detail";
+        OrderInfo orderInfo = miaoshaService.miaosha(user, goods);
+        return Result.success(orderInfo);
     }
 }

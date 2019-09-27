@@ -158,4 +158,20 @@ public class RedisService {
     }
 
 
+    /**
+     * 删除
+     * */
+    public boolean delete(KeyPrefix prefix, String key) {
+        Jedis jedis = null;
+        try {
+            jedis =  jp.getResource();
+            //生成真正的key
+            String realKey  = prefix.getPrefix() + key;
+            long ret =  jedis.del(key);
+            return ret > 0;
+        }finally {
+            returnToPool(jedis);
+        }
+    }   public void delete(MiaoshaUserKey getById, String s) {
+    }
 }
