@@ -1,6 +1,7 @@
 package com.kejia.miaosha.controller;
 
 import com.kejia.miaosha.domin.User;
+import com.kejia.miaosha.rabbitmq.MQSender;
 import com.kejia.miaosha.redis.RedisService;
 import com.kejia.miaosha.redis.UserKey;
 import com.kejia.miaosha.result.Result;
@@ -54,4 +55,27 @@ public class SampleController {
         //String str =redisService.get(UserKey.getByid,""+1,String.class);
         return Result.success(true);
     }
+    @Autowired
+    MQSender mqSender;
+//    @RequestMapping("/mq/derect")
+//    @ResponseBody
+//    public Result<String> mq(){
+//        mqSender.send("hello rabbitmq");
+//        return Result.success("hello rabbitmq");
+//    }
+//
+//    @RequestMapping("/mq/topic")
+//    @ResponseBody
+//    public Result<String> mq_topic(){
+//        mqSender.sendTopic("hello rabbitmqTopic");
+//        return Result.success("hello rabbitmq");
+//    }
+//    @RequestMapping("/mq/header")
+//    @ResponseBody
+//    public Result<String> mq_header(){
+//        mqSender.sendHeader("hello rabbitmqTopic");
+//        return Result.success("hello rabbitmq");
+//    }
+
+
 }
