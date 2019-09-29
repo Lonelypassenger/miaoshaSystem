@@ -35,6 +35,11 @@ public class GoodsService {
         int ret = goodsDao.reduceStock(g);
         return ret>0;
     }
+
+    /**
+     * 清空库存函数
+     * @param goodsList
+     */
     public void resetStock(List<GoodsVo> goodsList) {
         for(GoodsVo goods : goodsList ) {
             MiaoshaGoods g = new MiaoshaGoods();
